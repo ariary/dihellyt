@@ -37,6 +37,7 @@ function youtube-audio-downloader()
 		
 		add_art "$filename_base.mp3" "$thumbnail" "$filename_output.mp3" #Add thumbnail image
 		edit_info "$filename_base.info.json" "$filename_output.mp3"
+		remove_files "$filename_base"
 
 
 	fi
@@ -54,6 +55,10 @@ function edit_info(){ #TO IMPROVE, avoid cat repetition
 
 
 	mid3v2 -a "$artist" -A "$album" -t "$title" -y "$year" "$2"  #Track info edition
+}
+
+function remove_files(){
+	rm "$1"*  
 }
 
 banner
