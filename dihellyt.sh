@@ -13,98 +13,99 @@ Dim="\033[2m"		    #Dim
 Ul="\033[4m"		    #UnderLine
 
 # GET OPTS
-POSITIONAL=()
-while [[ $# -gt 0 ]]
-do
-key="$1"
+function get_opt(){
+	POSITIONAL=()
+	while [[ $# -gt 0 ]]
+	do
+	key="$1"
 
-case $key in
-    -s|--single)
-    if [[ -z $2 ]]; then
-        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-        exit
-    fi
-    SINGLE="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -P|--playlist)
-    if [[ -z $2 ]]; then
-        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-        exit
-    fi
-    PLAYLIST="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -a|--artist)
-    if [[ -z $2 ]]; then
-        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-        exit
-    fi
-    ARTIST="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -A|--album)
-    if [[ -z $2 ]]; then
-        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-        exit
-    fi
-    ALBUM="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -t|--title)
-    if [[ -z $2 ]]; then
-        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-        exit
-    fi
-    TITLE="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -q|--quiet-mode)
-    QUIET=YES
-    shift # past argument
-    ;;
-    -h|--help)
-    HELP=YES
-    shift # past argument
-    ;;
-    *)    # unknown option
-    POSITIONAL+=("$1") # save it in an array for later
-    shift # past argument
-    ;;
-esac
-done
-set -- "${POSITIONAL[@]}" # restore positional parameters
+	case $key in
+	    -s|--single)
+	    if [[ -z $2 ]]; then
+	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+	        exit
+	    fi
+	    SINGLE="$2"
+	    shift # past argument
+	    shift # past value
+	    ;;
+	    -P|--playlist)
+	    if [[ -z $2 ]]; then
+	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+	        exit
+	    fi
+	    PLAYLIST="$2"
+	    shift # past argument
+	    shift # past value
+	    ;;
+	    -a|--artist)
+	    if [[ -z $2 ]]; then
+	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+	        exit
+	    fi
+	    ARTIST="$2"
+	    shift # past argument
+	    shift # past value
+	    ;;
+	    -A|--album)
+	    if [[ -z $2 ]]; then
+	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+	        exit
+	    fi
+	    ALBUM="$2"
+	    shift # past argument
+	    shift # past value
+	    ;;
+	    -t|--title)
+	    if [[ -z $2 ]]; then
+	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+	        exit
+	    fi
+	    TITLE="$2"
+	    shift # past argument
+	    shift # past value
+	    ;;
+	    -q|--quiet-mode)
+	    QUIET=YES
+	    shift # past argument
+	    ;;
+	    -h|--help)
+	    HELP=YES
+	    shift # past argument
+	    ;;
+	    *)    # unknown option
+	    POSITIONAL+=("$1") # save it in an array for later
+	    shift # past argument
+	    ;;
+	esac
+	done
+	set -- "${POSITIONAL[@]}" # restore positional parameters
 
-if [[ -n $1 ]]; then
-    echo "$POSITIONAL"
-    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Unknown option: $POSITIONAL. Please check the help page with -h or --help to see the possible options.\n"
-    exit
-fi
-
-
-## UNCOMPATIBLE OPTIONS
-if  [[ ! -z "$SINGLE" ]] && [[ ! -z "$PLAYLIST" ]]; then
-    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} -P and -s options can't be called in the same time.\n"
-    exit
-fi
+	if [[ -n $1 ]]; then
+	    echo "$POSITIONAL"
+	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Unknown option: $POSITIONAL. Please check the help page with -h or --help to see the possible options.\n"
+	    exit
+	fi
 
 
-if  [[ ! -z "$TITLE" ]] && [[ ! -z "$PLAYLIST" ]]; then
-    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} -P and -t options can't be called in the same time.\n"
-    exit
-fi
+	## UNCOMPATIBLE OPTIONS
+	if  [[ ! -z "$SINGLE" ]] && [[ ! -z "$PLAYLIST" ]]; then
+	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} -P and -s options can't be called in the same time.\n"
+	    exit
+	fi
 
-## CHECK REQUIRED OPTIONS
-if  [[ -z "$SINGLE" ]] && [[ -z "$PLAYLIST" ]]; then
-    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Please use at least the -s option (for a single link download) or the -P option (to download a playlist).Please check the help page with -h or --help to see the possible options.\n"
-    exit
-fi
 
+	if  [[ ! -z "$TITLE" ]] && [[ ! -z "$PLAYLIST" ]]; then
+	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} -P and -t options can't be called in the same time.\n"
+	    exit
+	fi
+
+	## CHECK REQUIRED OPTIONS
+	if  [[ -z "$SINGLE" ]] && [[ -z "$PLAYLIST" ]]; then
+	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Please use at least the -s option (for a single link download) or the -P option (to download a playlist).Please check the help page with -h or --help to see the possible options.\n"
+	    exit
+	fi
+}
 banner()
 {
 	echo -ne \
@@ -194,17 +195,6 @@ function read_json(){
 	YEAR="$(cat $1 | jq ."release_year" | cut -d "\"" -f 2)"
 }
 
-
-# function edit_info(){ #TO IMPROVE, avoid cat repetition
-# 	artist="$(cat $1 | jq ."creator" | cut -d "\"" -f 2)"
-# 	album="$(cat $1 | jq ."album" | cut -d "\"" -f 2)"
-# 	title="$(cat $1 | jq ."title" | cut -d "\"" -f 2)"
-# 	year="$(cat $1 | jq ."release_year" | cut -d "\"" -f 2)"
-
-
-# 	mid3v2 -a "$artist" -A "$album" -t "$title" -y "$year" "$2"  #Track info edition
-# }
-
 function edit_info(){
 	mid3v2 -a "$3" -A "$4" -t "$2" -y "$YEAR" "$1"  #Track info edition
 }
@@ -213,11 +203,13 @@ function remove_files(){
 	rm "$1"*  
 }
 
+
+#START PRGM
 banner
+get_opt
 
 if [[ ! -z "$SINGLE" ]]; then
 	youtube_audio_download "$SINGLE" "$TITLE" "$ARTIST" "$ALBUM"
 else
 	echo "playlist"
 fi
-# youtube-audio-downloader "$1"
