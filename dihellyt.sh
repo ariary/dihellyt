@@ -13,99 +13,84 @@ Dim="\033[2m"		    #Dim
 Ul="\033[4m"		    #UnderLine
 
 # GET OPTS
-function get_opt(){
-	POSITIONAL=()
-	while [[ $# -gt 0 ]]
-	do
-	key="$1"
 
-	case $key in
-	    -s|--single)
-	    if [[ -z $2 ]]; then
-	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-	        exit
-	    fi
-	    SINGLE="$2"
-	    shift # past argument
-	    shift # past value
-	    ;;
-	    -P|--playlist)
-	    if [[ -z $2 ]]; then
-	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-	        exit
-	    fi
-	    PLAYLIST="$2"
-	    shift # past argument
-	    shift # past value
-	    ;;
-	    -a|--artist)
-	    if [[ -z $2 ]]; then
-	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-	        exit
-	    fi
-	    ARTIST="$2"
-	    shift # past argument
-	    shift # past value
-	    ;;
-	    -A|--album)
-	    if [[ -z $2 ]]; then
-	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-	        exit
-	    fi
-	    ALBUM="$2"
-	    shift # past argument
-	    shift # past value
-	    ;;
-	    -t|--title)
-	    if [[ -z $2 ]]; then
-	        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
-	        exit
-	    fi
-	    TITLE="$2"
-	    shift # past argument
-	    shift # past value
-	    ;;
-	    -q|--quiet-mode)
-	    QUIET=YES
-	    shift # past argument
-	    ;;
-	    -h|--help)
-	    HELP=YES
-	    shift # past argument
-	    ;;
-	    *)    # unknown option
-	    POSITIONAL+=("$1") # save it in an array for later
-	    shift # past argument
-	    ;;
-	esac
-	done
-	set -- "${POSITIONAL[@]}" # restore positional parameters
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
 
-	if [[ -n $1 ]]; then
-	    echo "$POSITIONAL"
-	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Unknown option: $POSITIONAL. Please check the help page with -h or --help to see the possible options.\n"
-	    exit
-	fi
+case $key in
+    -u|--url)
+    if [[ -z $2 ]]; then
+        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+        exit
+    fi
+    URL="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -a|--artist)
+    if [[ -z $2 ]]; then
+        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+        exit
+    fi
+    ARTIST="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -A|--album)
+    if [[ -z $2 ]]; then
+        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+        exit
+    fi
+    ALBUM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -t|--title)
+    if [[ -z $2 ]]; then
+        echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} $key option requires an argument\n"
+        exit
+    fi
+    TITLE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -q|--quiet-mode)
+    QUIET=YES
+    shift # past argument
+    ;;
+    -h|--help)
+    HELP=YES
+    shift # past argument
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
 
+if [[ -n $1 ]]; then
+    echo "$POSITIONAL"
+    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Unknown option: $POSITIONAL. Please check the help page with -h or --help to see the possible options.\n"
+    exit
+fi
 
-	## UNCOMPATIBLE OPTIONS
-	if  [[ ! -z "$SINGLE" ]] && [[ ! -z "$PLAYLIST" ]]; then
-	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} -P and -s options can't be called in the same time.\n"
-	    exit
-	fi
+echo "URL  = ${URL}"
+echo "ARTIST    = ${ARTIST}"
+echo "ALBUM         = ${ALBUM}"
+echo "TITLE         = ${TITLE}"
+echo "QUIET MODE         = ${QUIET}"
+echo "HELP         = ${HELP}"
 
+## CHECK REQUIRED OPTIONS
+if  [[ -z "$URL" ]] ; then
+    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Please use at least the -u option (for a URL link download) .Please check the help page with -h or --help to see the possible options.\n"
+    exit
+fi
 
-	if  [[ ! -z "$TITLE" ]] && [[ ! -z "$PLAYLIST" ]]; then
-	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} -P and -t options can't be called in the same time.\n"
-	    exit
-	fi
-
-	## CHECK REQUIRED OPTIONS
-	if  [[ -z "$SINGLE" ]] && [[ -z "$PLAYLIST" ]]; then
-	    echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Please use at least the -s option (for a single link download) or the -P option (to download a playlist).Please check the help page with -h or --help to see the possible options.\n"
-	    exit
-	fi
-}
 banner()
 {
 	echo -ne \
@@ -128,6 +113,8 @@ function youtube_audio_download(){
 	if [[ -z $2 ]] || [[ -z $3 ]] || [[ -z $4 ]]; then
 		youtube-dl  -x  --audio-format mp3 --write-thumbnail --write-info-json $1 # Download
 		read_json "$filename_base.info.json"
+	else
+		youtube-dl  -x  --audio-format mp3 --write-thumbnail $1
 	fi
 	
 	
@@ -138,7 +125,7 @@ function youtube_audio_download(){
 	#last Chek-up
 	if [[ -z "$ARTIST" ]]; then
 		echo -ne "\r${Bold}${Gr}[Action required]  \b\b${Wh} "
-		read -r -p "No artist has been found. Do you want to specify one? [y/N] (Press enter to coninue without specify it)" response
+		read -r -p "No artist has been found. Do you want to specify one? [y/N] (Press enter to continue without specify it)" response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 		then
 		    echo "Yes"
@@ -148,7 +135,7 @@ function youtube_audio_download(){
 
 	if [[ -z "$ALBUM" ]]; then
 		echo -ne "\r${Bold}${Gr}[Action required]  \b\b${Wh} "
-		read -r -p "No Album title has been found. Do you want to specify one? [y/N] (Press enter to coninue without specify it)" response
+		read -r -p "No Album title has been found. Do you want to specify one? [y/N] (Press enter to continue without specify it)" response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 		then
 		    echo "Yes"
@@ -158,7 +145,7 @@ function youtube_audio_download(){
 
 	if [[ -z  "$TITLE" ]]; then
 		echo -ne "\r${Bold}${Gr}[Action required]  \b\b${Wh} "
-		read -r -p "No title has been found. Do you want to specify one? [y/N] (Press enter to coninue without specify it)" response
+		read -r -p "No title has been found. Do you want to specify one? [y/N] (Press enter to continue without specify it)" response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 		then
 		    echo "Yes"
@@ -206,10 +193,4 @@ function remove_files(){
 
 #START PRGM
 banner
-get_opt
-
-if [[ ! -z "$SINGLE" ]]; then
-	youtube_audio_download "$SINGLE" "$TITLE" "$ARTIST" "$ALBUM"
-else
-	echo "playlist"
-fi
+youtube_audio_download "$URL" "$TITLE" "$ARTIST" "$ALBUM"
