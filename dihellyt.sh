@@ -99,7 +99,7 @@ banner()
    │${Gr}${Bold}DihelYT${Wh}: ${Dim}${Br}Download Music (mp3) from YT  with tags & art ${Wh} ${Pr}1.0 (C) 2019${Wh} │\n\
    │${Gr}${Bold}Author${Wh}   : ${Gr}Ariary${Wh}			                                 │\n\
    │${Gr}${Bold}Notes${Wh}   : ${Gr}Huge inspiration from https://github.com/iamrootsh3ll/odio ${Wh}│\n\
-   │${Gr}${Bold}Dependencies${Wh}   : ${Br}youtube-dl, ffmpepg, and python-mutagen, jq   ${Wh}   	 │\n\
+   │${Gr}${Bold}Dependencies${Wh}   : ${Br}youtube-dl, ffmpeg, and python-mutagen, jq   ${Wh}   	 │\n\
    ${Dim}${Bold}└─────────────────────────────────────────────────────────────────────┘${Wh}\n\
 "
 }
@@ -108,17 +108,17 @@ banner()
 
 
 function youtube_audio_download(){
-	thumbnail=$(youtube-dl --skip-download --get-thumbnail $1) #get thumbnail URL location
-	filename_base=$(youtube-dl --skip-download --get-filename $1 | rev | cut -d "." -f2 | rev ) #get filename. By default youtube-dl put the mp4 extension so we must delete the extension
+	thumbnail=$(youtube-dl --skip-download --get-thumbnail --restrict-filenames $1) #get thumbnail URL location
+	filename_base=$(youtube-dl --skip-download --get-filename --restrict-filenames $1 | rev | cut -d "." -f2- | rev ) #get filename. By default youtube-dl put the mp4 extension so we must delete the extension
 	if [[ -z $2 ]] || [[ -z $3 ]] || [[ -z $4 ]]; then
-		youtube-dl  -x  --audio-format mp3 --write-thumbnail --write-info-json $1 # Download
+		youtube-dl  -x  --audio-format mp3 --write-thumbnail --write-info-json --restrict-filenames $1 # Download
 		read_json "$filename_base.info.json"
 	else
-		youtube-dl  -x  --audio-format mp3 --write-thumbnail $1
+		youtube-dl  -x  --audio-format mp3 --write-thumbnail --restrict-filenames $1
 	fi
 	
 	
-	filename_output=$(youtube-dl --skip-download --get-title $1)
+	filename_output=$(youtube-dl --skip-download --get-title --restrict-filenames $1)
 	
 	add_art "$filename_base.mp3" "$thumbnail" "$filename_output.mp3" #Add thumbnail image
 
