@@ -1,4 +1,5 @@
 
+
 # dihellyt
 Download Music (mp3) from YT  with tags &amp; art.
 To use it install the dependencies and make the bash script executable:
@@ -8,10 +9,14 @@ To use it install the dependencies and make the bash script executable:
 
 ## Options
 `-u` | `--url` specify the youtube url to download. This option is required.
- `-a` | `--` artist specify the artist tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. \n
- `-A` | `--album` specify the album tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. \n
- `-t` | `--title` specify the artist tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. \n
+ `-a` | `--` artist specify the artist tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. 
+ 
+ `-A` | `--album` specify the album tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. 
+ 
+ `-t` | `--title` specify the artist tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself.
+ 
  `-q`|`--quiet-mode` Verbose mode is enable by default. Enable to run the script without I/O information. **TODO**
+ 
 `-h`|`--help` display the available options. **TODO**
 
 
