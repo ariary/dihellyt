@@ -86,7 +86,7 @@ echo "QUIET MODE         = ${QUIET}"
 echo "HELP         = ${HELP}"
 
 ## CHECK REQUIRED OPTIONS
-if  [[ -z "$URL" ]] ; then
+if  [[ -z "$URL" && -z "$HELP" ]] ; then
     echo -ne "\r${Bold}${Rd}[Error]  \b\b${Wh} Please use at least the -u option (for a URL link download) .Please check the help page with -h or --help to see the possible options.\n"
     exit
 fi
@@ -101,6 +101,22 @@ banner()
    │${Gr}${Bold}Notes${Wh}   : ${Gr}Huge inspiration from https://github.com/iamrootsh3ll/odio ${Wh}│\n\
    │${Gr}${Bold}Dependencies${Wh}   : ${Br}youtube-dl, ffmpeg, and python-mutagen, jq   ${Wh}   	 │\n\
    ${Dim}${Bold}└─────────────────────────────────────────────────────────────────────┘${Wh}\n\
+"
+}
+
+help()
+{
+	echo -ne \
+"\
+   -u | --url specify the youtube url to download. This option is required. -a | -- artist specify the artist tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. \n\
+
+   -A | --album specify the album tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. \n\
+
+   -t | --title specify the artist tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. \n\
+
+   -q|--quiet-mode Verbose mode is enable by default. Enable to run the script without I/O information. \n\
+
+   -h|--help display the available options. \n\
 "
 }
 
@@ -193,4 +209,9 @@ function remove_files(){
 
 #START PRGM
 banner
-youtube_audio_download "$URL" "$TITLE" "$ARTIST" "$ALBUM"
+if [[ -z "$HELP" ]]; then
+	youtube_audio_download "$URL" "$TITLE" "$ARTIST" "$ALBUM"
+else
+	help
+fi
+
