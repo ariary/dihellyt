@@ -78,12 +78,12 @@ if [[ -n $1 ]]; then
     exit
 fi
 
-echo "URL  = ${URL}"
-echo "ARTIST    = ${ARTIST}"
-echo "ALBUM         = ${ALBUM}"
-echo "TITLE         = ${TITLE}"
-echo "QUIET MODE         = ${QUIET}"
-echo "HELP         = ${HELP}"
+# echo "URL  = ${URL}"
+# echo "ARTIST    = ${ARTIST}"
+# echo "ALBUM         = ${ALBUM}"
+# echo "TITLE         = ${TITLE}"
+# echo "QUIET MODE         = ${QUIET}"
+# echo "HELP         = ${HELP}"
 
 ## CHECK REQUIRED OPTIONS
 if  [[ -z "$URL" && -z "$HELP" ]] ; then
@@ -127,10 +127,15 @@ function youtube_audio_download(){
 	thumbnail=$(youtube-dl --skip-download --get-thumbnail --restrict-filenames $1) #get thumbnail URL location
 	filename_base=$(youtube-dl --skip-download --get-filename --restrict-filenames $1 | rev | cut -d "." -f2- | rev ) #get filename. By default youtube-dl put the mp4 extension so we must delete the extension
 	if [[ -z $2 ]] || [[ -z $3 ]] || [[ -z $4 ]]; then
-		youtube-dl  -x  --audio-format mp3 --write-thumbnail --write-info-json --restrict-filenames $1 # Download
+		if [[ -z "$QUIET" ]]; then
+			youtube-dl  -x  --audio-format mp3 --write-thumbnail --write-info-json --restrict-filenames $1 # Download
+		else
+			youtube-dl  -x  --audio-format mp3 --write-thumbnail --write-info-json --restrict-filenames -q $1 # Download non-verbose
+		fi
+		
 		read_json "$filename_base.info.json"
 	else
-		youtube-dl  -x  --audio-format mp3 --write-thumbnail --restrict-filenames $1
+		youtube-dl  -x  --audio-format mp3 --write-thumbnail --restrict-filenames $1 # nothing to read in the information json file
 	fi
 	
 	
@@ -144,7 +149,6 @@ function youtube_audio_download(){
 		read -r -p "No artist has been found. Do you want to specify one? [y/N] (Press enter to continue without specify it)" response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 		then
-		    echo "Yes"
 		    read -r -p "Please specify the title: " ARTIST
 		fi
 	fi
@@ -154,7 +158,6 @@ function youtube_audio_download(){
 		read -r -p "No Album title has been found. Do you want to specify one? [y/N] (Press enter to continue without specify it)" response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 		then
-		    echo "Yes"
 		    read -r -p "Please specify the title: " ALBUM
 		fi
 	fi
@@ -164,7 +167,6 @@ function youtube_audio_download(){
 		read -r -p "No title has been found. Do you want to specify one? [y/N] (Press enter to continue without specify it)" response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 		then
-		    echo "Yes"
 		    read -r -p "Please specify the title: " TITLE
 		fi
 	fi
@@ -179,7 +181,11 @@ function youtube_audio_download(){
 
 
 function add_art(){
-	ffmpeg -i "$1" -i "$2" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" "$3"
+	if [[ -z "$QUIET" ]]; then
+		ffmpeg -i "$1" -i "$2" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" "$3"
+	else
+		ffmpeg -i "$1" -i "$2" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" -loglevel error "$3" # non-verbose
+	fi
 }
 
 function read_json(){
@@ -199,7 +205,11 @@ function read_json(){
 }
 
 function edit_info(){
-	mid3v2 -a "$3" -A "$4" -t "$2" -y "$YEAR" "$1"  #Track info edition
+	if [[ -z "$QUIET" ]]; then
+		mid3v2 -a "$3" -A "$4" -t "$2" -y "$YEAR" "$1"  #Track info edition
+	else
+		mid3v2 -a "$3" -A "$4" -t "$2" -y "$YEAR" "$1"  #Track info edition
+	fi
 }
 
 function remove_files(){
@@ -208,7 +218,12 @@ function remove_files(){
 
 
 #START PRGM
-banner
+## BANNER
+if [[ -z "$QUIET" ]]; then
+	banner
+fi
+
+## DL / HELP
 if [[ -z "$HELP" ]]; then
 	youtube_audio_download "$URL" "$TITLE" "$ARTIST" "$ALBUM"
 else
