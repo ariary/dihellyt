@@ -7,6 +7,12 @@ To use it install the dependencies and make the bash script executable:
     # apt-get install youtube-dl ffmpeg python-mutagen jq
     # chmod a+x dihellyt.sh 
 
+To install the right version of youtube-dl:
+`sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+
+sudo chmod a+rx /usr/local/bin/youtube-dl`
+
+
 ## Options
 `-u` | `--url` specify the youtube url to download. This option is required.
  `-a` | `--` artist specify the artist tag of the mp3 resulted file. If the flag is not used the shell will try to find it by itself. 
